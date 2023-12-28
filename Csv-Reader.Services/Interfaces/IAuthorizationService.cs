@@ -5,7 +5,7 @@ namespace Csv_Reader.Services.Interfaces
 {
     public interface IAuthorizationService
     {
-        Task<User> Register(RegistrationUserVm model);
-        Task<bool> Login(LoginUserVm model);
+        Task<User> RegisterAsync(RegistrationUserVm model);
+        Task<string> LoginAsync(LoginUserVm model);
     }
 }

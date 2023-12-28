@@ -1,8 +1,10 @@
 using Csv_Reader.DAL;
+using Csv_Reader.DAL.Implementations;
+using Csv_Reader.DAL.Interfaces;
 using Csv_Reader.Domain.Entity;
 using Csv_Reader.Services.Implementations;
 using Csv_Reader.Services.Interfaces;
-using CSV_Reader_server.Configs;
+using CSV_Reader_server.Services.Configs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,10 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddDbContext<AppDbContext>(options => {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));    
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));   
 });
 builder.Services.AddDefaultIdentity<User>(options => {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequiredLength = 5;   // минимальная длина
     options.Password.RequireNonAlphanumeric = false;   // требуются ли не алфавитно-цифровые символы
     options.Password.RequireLowercase = false; // требуются ли символы в нижнем регистре
@@ -50,6 +52,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IUserFileRepository, UserFileRepository>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
