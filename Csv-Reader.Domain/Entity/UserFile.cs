@@ -1,3 +1,4 @@
+
 namespace Csv_Reader.Domain.Entity
 {
     public class UserFile

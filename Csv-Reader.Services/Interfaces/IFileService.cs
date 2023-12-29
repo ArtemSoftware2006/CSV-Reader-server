@@ -1,12 +1,12 @@
-using System.Runtime.InteropServices;
+using Csv_Reader.Domain.ViewModel.File;
 
 namespace Csv_Reader.Services.Interfaces
 {
     public interface IFileService
     {
-        Task<List<string>> GetFileNames(string userId);
-        Task<bool> SaveFile(string userId, IFormFile file);
-        Task<bool> DeleteFile(string userId, Guid fileId);
-        Task<Stream> GetFileStream(string userId, Guid fileId);
+        Task<List<ShortUserFile>> GetFileNamesAsync(string userId);
+        Task<bool> SaveFileAsync(string userId, IFormFile file);
+        Task<bool> DeleteFileAsync(string userId, Guid fileId);
+        Task<Stream> GetFileStreamAsync(string userId, Guid fileId);
     }
 }

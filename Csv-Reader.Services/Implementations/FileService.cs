@@ -1,5 +1,6 @@
 using Csv_Reader.DAL.Interfaces;
 using Csv_Reader.Domain.Entity;
+using Csv_Reader.Domain.ViewModel.File;
 using Csv_Reader.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace Csv_Reader.Services.Implementations
     public class FileService : IFileService
     {
         private readonly string PATH_TO_STORE;
+        private readonly string EXTENSION = ".csv";
         private readonly IUserFileRepository _fileRepostory;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<FileService> _logger;
@@ -30,14 +32,15 @@ namespace Csv_Reader.Services.Implementations
             _fileRepostory = fileRepostory;
         }
 
-        public async Task<bool> DeleteFile(string userId, Guid fileId)
+        public async Task<bool> DeleteFileAsync(string userId, Guid fileId)
         {
             try
             {
-                string filePath = PATH_TO_STORE + fileId;
+                string filePath = PATH_TO_STORE + fileId + EXTENSION;
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
+                    await _fileRepostory.DeleteAsync(fileId);
                     return true;
                 }
 
@@ -55,7 +58,7 @@ namespace Csv_Reader.Services.Implementations
             }
         }
 
-        public async Task<List<string>> GetFileNames(string userId)
+        public async Task<List<ShortUserFile>> GetFileNamesAsync(string userId)
         {
             try
             {
@@ -64,23 +67,23 @@ namespace Csv_Reader.Services.Implementations
                 if (user != null)
                 {
                     return user.UserFiles
-                        .Select(x => x.Name)
+                        .Select(x => new ShortUserFile(x.Name, x.Id))
                         .ToList();
                 }
-                return new List<string>();
+                return new List<ShortUserFile>();
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex.Message);
-                return new List<string>();
+                return new List<ShortUserFile>();
             }
         }
 
-        public async Task<Stream> GetFileStream(string userId, Guid fileId)
+        public async Task<Stream> GetFileStreamAsync(string userId, Guid fileId)
         {
             try
             {
-                string filePath = PATH_TO_STORE + fileId;
+                string filePath = PATH_TO_STORE + fileId + EXTENSION;
                 if (!File.Exists(filePath))
                 {
                     throw new FileNotFoundException($"Файл не найден. (id = {fileId}, userId = {userId})", filePath);
@@ -88,7 +91,10 @@ namespace Csv_Reader.Services.Implementations
 
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    return fileStream;                    
+                    MemoryStream memoryStream = new MemoryStream();
+                    await fileStream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    return memoryStream;                    
                 }
             }
             catch (FileNotFoundException ex)
@@ -103,7 +109,7 @@ namespace Csv_Reader.Services.Implementations
             }
         }
 
-        public async Task<bool> SaveFile(string userId, IFormFile file)
+        public async Task<bool> SaveFileAsync(string userId, IFormFile file)
         {
             try
             {
