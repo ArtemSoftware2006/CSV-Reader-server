@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Csv_Reader.Domain.Entity;
 using Csv_Reader.Domain.Exceptions;
-using Csv_Reader.Domain.Security;
 using Csv_Reader.Domain.ViewModel.User;
 using Csv_Reader.Services.Interfaces;
 using CSV_Reader_server.Services.Configs;
