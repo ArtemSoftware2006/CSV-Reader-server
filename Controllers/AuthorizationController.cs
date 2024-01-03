@@ -31,7 +31,7 @@ namespace CSV_Reader_server.Controllers
             catch (LoginException ex)
             {
                 _logger.LogWarning(ex.Message);
-                return BadRequest(ex.Message);
+                return StatusCode(403, ex.Message);
             }
         }
 

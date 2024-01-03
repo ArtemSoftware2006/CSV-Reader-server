@@ -22,7 +22,7 @@ namespace CSV_Reader_server.Controllers
         {
             if (ModelState.IsValid)
             {
-                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         
                 string userId = GetUserId(token);
 
